@@ -1,5 +1,7 @@
 ![PrestaShop](https://img.shields.io/badge/PrestaShop-1.7%20%7C%208.x-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![Release](https://img.shields.io/github/v/release/iamadlx/prestashop-ahrefs-analytics?label=Latest%20release)
+![Downloads](https://img.shields.io/github/downloads/iamadlx/prestashop-ahrefs-analytics/total?label=Downloads)
 
 # PrestaShop Hreflang x-default Selector
 
