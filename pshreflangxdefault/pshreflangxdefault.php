@@ -2,10 +2,17 @@
 /**
  * PrestaShop Hreflang x-default Selector
  *
- * Adds a hreflang="x-default" link tag in the <head>, pointing to a user-selected language URL.
+ * Adds a hreflang="x-default" link tag in the <head>, pointing to a
+ * user-selected language URL. Injected through displayHeader, no theme edits.
  *
- * @author ADLX
+ * Note: the configuration keys are spelled PSHRELANGXDEFAULT_* (missing F).
+ * Do NOT rename them: they are stored in the database of existing installs,
+ * renaming would orphan the merchant's settings.
+ *
+ * Author : ADLX (https://github.com/iamadlx)
+ * License: MIT
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -15,33 +22,24 @@ class Pshreflangxdefault extends Module
     const CONF_ENABLED = 'PSHRELANGXDEFAULT_ENABLED';
     const CONF_LANG_ID = 'PSHRELANGXDEFAULT_LANG_ID';
 
-    /**
-     * Minimal BO bilingual helper (FR/EN) based on the Back Office language.
-     * Falls back to English for any other BO language.
-     */
-    protected function tr($en, $fr)
-    {
-        $iso = isset($this->context->language->iso_code) ? strtolower((string) $this->context->language->iso_code) : 'en';
-        return ($iso === 'fr') ? $fr : $en;
-    }
-
     public function __construct()
     {
         $this->name = 'pshreflangxdefault';
         $this->tab = 'seo';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'ADLX';
         $this->need_instance = 0;
-
         $this->bootstrap = true;
+        $this->ps_versions_compliancy = [
+            'min' => '1.7.8.0',
+            'max' => '8.99.99',
+        ];
+
         parent::__construct();
 
         $this->displayName = $this->l('PrestaShop Hreflang x-default Selector');
-        $this->description = $this->l('Adds a hreflang="x-default" tag and lets you pick which language URL it should point to.');
-        $this->ps_versions_compliancy = [
-            'min' => '1.7.8.0',
-            'max' => _PS_VERSION_,
-        ];
+        $this->description = $this->l('Adds an x-default hreflang tag and lets you pick which language URL it should point to.');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? Its settings will be deleted.');
     }
 
     public function install()
@@ -73,11 +71,11 @@ class Pshreflangxdefault extends Module
 
             // Force an explicit selection: no implicit shop default.
             if ($idLang <= 0 || !in_array($idLang, $activeLangIds, true)) {
-                $output .= $this->displayError($this->tr('Please select a valid active language.', 'Veuillez sélectionner une langue active valide.'));
+                $output .= $this->displayError($this->l('Please select a valid active language.'));
             } else {
                 Configuration::updateValue(self::CONF_ENABLED, $enabled ? 1 : 0);
                 Configuration::updateValue(self::CONF_LANG_ID, $idLang);
-                $output .= $this->displayConfirmation($this->tr('Settings updated.', 'Paramètres enregistrés.'));
+                $output .= $this->displayConfirmation($this->l('Settings updated.'));
             }
         }
 
@@ -92,7 +90,7 @@ class Pshreflangxdefault extends Module
         // Placeholder (forces an explicit selection)
         $options[] = [
             'id_option' => 0,
-            'name' => $this->tr('— Select a language —', '— Sélectionner une langue —'),
+            'name' => $this->l('-- Select a language --'),
         ];
         foreach ($languages as $lang) {
             $label = $lang['name'];
@@ -108,36 +106,40 @@ class Pshreflangxdefault extends Module
         $fieldsForm = [
             'form' => [
                 'legend' => [
-                    'title' => $this->tr('x-default configuration', 'Configuration x-default'),
+                    'title' => $this->l('x-default configuration'),
                     'icon'  => 'icon-globe',
                 ],
-                'description' => $this->tr(
-                    'The <strong>x-default</strong> hreflang is a fallback URL used when the user language/region does not match any of your alternates. This module injects <code>&lt;link rel="alternate" hreflang="x-default" ...&gt;</code> into the <code>&lt;head&gt;</code> via <code>displayHeader</code> — no theme edits.',
-                    'Le hreflang <strong>x-default</strong> est une URL de repli quand la langue/région de l’utilisateur ne correspond à aucune alternative. Ce module injecte <code>&lt;link rel="alternate" hreflang="x-default" ...&gt;</code> dans le <code>&lt;head&gt;</code> via <code>displayHeader</code> — sans modifier le thème.'
+                // l() escapes HTML, so markup goes in through sprintf tokens
+                'description' => sprintf(
+                    $this->l('The %1$s hreflang is a fallback URL used when the visitor language or region does not match any of your alternates. This module injects %2$s into the %3$s via %4$s, with no theme edits.'),
+                    '<strong>x-default</strong>',
+                    '<code>&lt;link rel="alternate" hreflang="x-default" ...&gt;</code>',
+                    '<code>&lt;head&gt;</code>',
+                    '<code>displayHeader</code>'
                 ),
                 'input' => [
                     [
                         'type' => 'switch',
-                        'label' => $this->tr('Enable injection', 'Activer l’injection'),
+                        'label' => $this->l('Enable injection'),
                         'name' => self::CONF_ENABLED,
                         'is_bool' => true,
                         'values' => [
                             [
                                 'id' => 'enabled_on',
                                 'value' => 1,
-                                'label' => $this->tr('Enabled', 'Activé'),
+                                'label' => $this->l('Enabled'),
                             ],
                             [
                                 'id' => 'enabled_off',
                                 'value' => 0,
-                                'label' => $this->tr('Disabled', 'Désactivé'),
+                                'label' => $this->l('Disabled'),
                             ],
                         ],
-                        'desc' => $this->tr('When disabled, nothing is added to your pages.', 'Quand désactivé, rien n’est ajouté à vos pages.'),
+                        'desc' => $this->l('When disabled, nothing is added to your pages.'),
                     ],
                     [
                         'type' => 'select',
-                        'label' => $this->tr('x-default URL language', 'Langue de l’URL x-default'),
+                        'label' => $this->l('x-default URL language'),
                         'name' => self::CONF_LANG_ID,
                         'required' => true,
                         'options' => [
@@ -145,14 +147,14 @@ class Pshreflangxdefault extends Module
                             'id' => 'id_option',
                             'name' => 'name',
                         ],
-                        'desc' => $this->tr(
-                            'Pick one of your <strong>active</strong> shop languages. That language URL will be used for <code>hreflang="x-default"</code>.',
-                            'Choisissez une des langues <strong>actives</strong> de la boutique. L’URL de cette langue sera utilisée pour <code>hreflang="x-default"</code>.'
+                        'desc' => sprintf(
+                            $this->l('Pick one of your active shop languages. That language URL will be used for %s.'),
+                            '<code>hreflang="x-default"</code>'
                         ),
                     ],
                 ],
                 'submit' => [
-                    'title' => $this->tr('Save', 'Enregistrer'),
+                    'title' => $this->l('Save'),
                 ],
             ],
         ];
@@ -182,11 +184,11 @@ class Pshreflangxdefault extends Module
         return [
             self::CONF_ENABLED => (int)Tools::getValue(
                 self::CONF_ENABLED,
-                (int)Configuration::get(self::CONF_ENABLED, 0)
+                (int)Configuration::get(self::CONF_ENABLED)
             ),
             self::CONF_LANG_ID => (int)Tools::getValue(
                 self::CONF_LANG_ID,
-                (int)Configuration::get(self::CONF_LANG_ID, 0)
+                (int)Configuration::get(self::CONF_LANG_ID)
             ),
         ];
     }
@@ -267,6 +269,6 @@ class Pshreflangxdefault extends Module
             'pshreflangxdefault_url' => $xdefaultUrl,
         ]);
 
-        return $this->display(__FILE__, 'views/templates/hook/xdefault.tpl');
+        return $this->display(__FILE__, 'xdefault.tpl');
     }
 }

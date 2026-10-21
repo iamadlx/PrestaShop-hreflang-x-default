@@ -16,7 +16,9 @@ Why? Many themes output hreflang tags for languages (`fr`, `en`, `nl`, …) but 
 
 ✅ No theme edits (safe for theme updates)
 ✅ Back-office configuration (enable/disable + default language)
-✅ Works with PrestaShop 1.7 / 8.x (and should remain compatible as long as `displayHeader` exists)
+✅ Works with PrestaShop 1.7.8 / 8.x (declared compatible up to 8.99.99)
+✅ Back office in English, translatable from **International > Translations** (French included)
+✅ Theme override supported: `themes/<theme>/modules/pshreflangxdefault/views/templates/hook/xdefault.tpl`
 
 ## Installation (30 seconds)
 
@@ -50,6 +52,6 @@ If you're looking for a hosting provider with **1-click PrestaShop installation*
 
 ## License
 
-MIT — see `LICENSE`
+MIT, see `LICENSE`
 
 Copyright (c) 2026 ADLX
