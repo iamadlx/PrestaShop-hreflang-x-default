@@ -26,7 +26,7 @@ class Pshreflangxdefault extends Module
     {
         $this->name = 'pshreflangxdefault';
         $this->tab = 'seo';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->author = 'ADLX';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -38,7 +38,7 @@ class Pshreflangxdefault extends Module
         parent::__construct();
 
         $this->displayName = $this->l('PrestaShop Hreflang x-default Selector');
-        $this->description = $this->l('Adds an x-default hreflang tag and lets you pick which language URL it should point to.');
+        $this->description = $this->l('Tells Google which language of your shop to show to visitors whose language you do not offer (x-default tag), without editing your theme.');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? Its settings will be deleted.');
     }
 
@@ -106,21 +106,14 @@ class Pshreflangxdefault extends Module
         $fieldsForm = [
             'form' => [
                 'legend' => [
-                    'title' => $this->l('x-default configuration'),
+                    'title' => $this->l('Default language for search engines'),
                     'icon'  => 'icon-globe',
                 ],
-                // l() escapes HTML, so markup goes in through sprintf tokens
-                'description' => sprintf(
-                    $this->l('The %1$s hreflang is a fallback URL used when the visitor language or region does not match any of your alternates. This module injects %2$s into the %3$s via %4$s, with no theme edits.'),
-                    '<strong>x-default</strong>',
-                    '<code>&lt;link rel="alternate" hreflang="x-default" ...&gt;</code>',
-                    '<code>&lt;head&gt;</code>',
-                    '<code>displayHeader</code>'
-                ),
+                'description' => $this->l('Tells Google which version of your pages to show to visitors whose language does not exist on your shop. Usually: English. Your visitors see no difference, it is an invisible signal for search engines.'),
                 'input' => [
                     [
                         'type' => 'switch',
-                        'label' => $this->l('Enable injection'),
+                        'label' => $this->l('Enable'),
                         'name' => self::CONF_ENABLED,
                         'is_bool' => true,
                         'values' => [
@@ -139,7 +132,7 @@ class Pshreflangxdefault extends Module
                     ],
                     [
                         'type' => 'select',
-                        'label' => $this->l('x-default URL language'),
+                        'label' => $this->l('Language for other visitors'),
                         'name' => self::CONF_LANG_ID,
                         'required' => true,
                         'options' => [
@@ -147,10 +140,7 @@ class Pshreflangxdefault extends Module
                             'id' => 'id_option',
                             'name' => 'name',
                         ],
-                        'desc' => sprintf(
-                            $this->l('Pick one of your active shop languages. That language URL will be used for %s.'),
-                            '<code>hreflang="x-default"</code>'
-                        ),
+                        'desc' => $this->l('Pick one of the languages of your shop. In most cases, English.'),
                     ],
                 ],
                 'submit' => [

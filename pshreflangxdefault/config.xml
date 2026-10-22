@@ -2,8 +2,8 @@
 <module>
   <name>pshreflangxdefault</name>
   <displayName><![CDATA[PrestaShop Hreflang x-default Selector]]></displayName>
-  <version><![CDATA[1.0.1]]></version>
-  <description><![CDATA[Adds an x-default hreflang tag and lets you pick which language URL it should point to.]]></description>
+  <version><![CDATA[1.0.2]]></version>
+  <description><![CDATA[Tells Google which language of your shop to show to visitors whose language you do not offer (x-default tag), without editing your theme.]]></description>
   <author><![CDATA[ADLX]]></author>
   <tab><![CDATA[seo]]></tab>
   <confirmUninstall><![CDATA[Are you sure you want to uninstall this module? Its settings will be deleted.]]></confirmUninstall>
